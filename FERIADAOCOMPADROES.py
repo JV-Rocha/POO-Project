@@ -70,6 +70,32 @@ class StoreAdapter(Game):
 
     def play(self):
         return self.external_api.launch_game()
+    
+# Decorator
+class GameDecorator(Game):
+    def __init__(self, game):
+        self.game = game
+
+class DLCDecorator(GameDecorator):
+    def play(self):
+        return self.game.play() + " com DLCs adicionais"
+    
+# Facade
+class GameFacade:
+    def __init__(self):
+        self.client = GameClient()
+        self.external_game = StoreAdapter(ExternalStoreAPI())
+
+    def play_game(self, game_name):
+        if external_game := self.external_game.play():
+           return external_game
+        elif self.client.has_game(game_name):
+            return self.client.show_library()
+       
+    def buy_game(self, game_name):
+        # Simula a compra de um jogo
+        self.client.add_game(game_name)
+        return f"Jogo '{game_name}' comprado e adicionado à biblioteca"
 
 # Uso
 game1 = GameFactory.create_game("indie")
@@ -83,6 +109,13 @@ proxy = GameProxy("Hollow Knight", game1)
 
 external_game = StoreAdapter(ExternalStoreAPI())
 
+game3 = GameFactory.create_game("aaa")
+game3 = DLCDecorator(game3)
+
+hub = GameFacade()
+
+game4 = hub.buy_game("Overwatch")
+
 print(game1.play())
 print(game2.play())
 
@@ -91,3 +124,7 @@ print(client2.show_library())
 print(proxy.play())
 
 print(external_game.play())
+
+print(game3.play())
+
+print(game4)
