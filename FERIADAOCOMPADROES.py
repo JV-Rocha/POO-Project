@@ -59,6 +59,18 @@ class GameProxy:
         else:
             raise ValueError("Game not found in library")
 
+# Adapter 
+class ExternalStoreAPI:
+    def launch_game(self):
+        return "Rodando jogo da loja externa"
+    
+class StoreAdapter(Game):
+    def __init__(self, external_api):
+        self.external_api = external_api
+
+    def play(self):
+        return self.external_api.launch_game()
+
 # Uso
 game1 = GameFactory.create_game("indie")
 game2 = GameFactory.create_game("aaa")
@@ -69,9 +81,13 @@ client2 = GameClient()
 
 proxy = GameProxy("Hollow Knight", game1)
 
+external_game = StoreAdapter(ExternalStoreAPI())
+
 print(game1.play())
 print(game2.play())
 
 print(client2.show_library())
 
 print(proxy.play())
+
+print(external_game.play())
