@@ -42,6 +42,22 @@ class GameClient:
 
     def show_library(self):
         return self.library
+    
+    def has_game(self, game_name):
+        return game_name in self.library
+
+# Proxy
+class GameProxy:
+    def __init__(self, game_name, game):
+        self.game_name = game_name
+        self.game = game
+        self.client = GameClient()
+
+    def play(self):
+        if self.client.has_game(self.game_name):
+            return self.game.play()
+        else:
+            raise ValueError("Game not found in library")
 
 # Uso
 game1 = GameFactory.create_game("indie")
@@ -51,7 +67,11 @@ client1 = GameClient()
 client1.add_game("Hollow Knight")
 client2 = GameClient()
 
+proxy = GameProxy("Hollow Knight", game1)
+
 print(game1.play())
 print(game2.play())
 
 print(client2.show_library())
+
+print(proxy.play())
